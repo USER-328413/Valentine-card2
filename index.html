@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Message for You</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #fff5f5;
+            font-family: 'Quicksand', sans-serif;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Heart Particles */
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            pointer-events: none;
+            z-index: 50;
+            animation: floatUp 4s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Envelope Animation */
+        .envelope-wrapper {
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            perspective: 1000px;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        .flap {
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #ff4d6d;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+            z-index: 30;
+        }
+
+        .envelope-open .flap {
+            transform: rotateX(180deg);
+            z-index: 10;
+        }
+
+        .letter {
+            transition: transform 0.8s ease;
+            z-index: 20;
+        }
+
+        .envelope-open .letter {
+            transform: translateY(-120px);
+        }
+
+        /* Transitions between sections */
+        #section-gimmicks, #section-message {
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+
+        .hidden-section {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
+        .visible-section {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: translateY(0);
+        }
+
+        /* Quirky Pulse Animation */
+        .pulse-heart {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-button {
+            transition: all 0.3s ease;
+        }
+        
+        .floating-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3);
+        }
+
+        /* Glassmorphism for the message section */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- Section 1: Interaction & Gimmicks -->
+    <div id="section-gimmicks" class="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
+        <h1 class="cursive text-5xl md:text-7xl text-[#ff4d6d] mb-12 text-center drop-shadow-sm">Open for a Surprise...</h1>
+        
+        <!-- Interactive Envelope -->
+        <div id="envelope" class="envelope-wrapper relative w-[300px] h-[200px] bg-[#ff8fa3] rounded-b-lg shadow-2xl" onclick="openEnvelope()">
+            <!-- The Flap -->
+            <div class="flap absolute top-0 left-0"></div>
+            
+            <!-- The Letter Inside -->
+            <div class="letter absolute top-5 left-5 right-5 bottom-5 bg-white rounded shadow-inner flex flex-col items-center justify-center">
+                <div class="text-[#ff4d6d] pulse-heart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                    </svg>
+                </div>
+                <span class="text-[10px] text-[#ff4d6d] mt-2 font-bold uppercase tracking-widest">For You</span>
+            </div>
+
+            <!-- Front cover (bottom part) -->
+            <div class="absolute bottom-0 left-0 w-full h-full bg-[#ff758f] rounded-b-lg flex items-end justify-center pb-4" style="clip-path: polygon(0 40%, 50% 100%, 100% 40%, 100% 100%, 0 100%);">
+            </div>
+        </div>
+
+        <p class="mt-8 text-gray-500 italic text-sm animate-pulse">(Click the envelope to unlock)</p>
+        
+        <!-- Interactive "Gimmick" Buttons -->
+        <div class="mt-12 flex flex-wrap justify-center gap-4">
+            <button onclick="rainHearts()" class="floating-button px-8 py-3 bg-[#ff4d6d] text-white rounded-full font-semibold shadow-lg hover:bg-[#ff758f]">Rain Hearts</button>
+            <button id="transition-btn" onclick="goToMessage()" class="hidden floating-button px-8 py-3 bg-white border-2 border-[#ff4d6d] text-[#ff4d6d] rounded-full font-semibold shadow-lg">Read My Message</button>
+        </div>
+    </div>
+
+    <!-- Section 2: The Message -->
+    <div id="section-message" class="hidden-section absolute inset-0 flex items-center justify-center bg-[#fff5f5] p-6 md:p-12 z-20 overflow-y-auto">
+        <div class="max-w-2xl w-full text-center glass-card p-8 md:p-16">
+            <div class="text-[#ff4d6d] mb-6 flex justify-center pulse-heart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                </svg>
+            </div>
+            <h2 class="cursive text-5xl md:text-6xl text-[#ff4d6d] mb-8">My Dearest...</h2>
+            <div class="text-lg md:text-2xl text-gray-700 leading-relaxed italic space-y-6">
+                <p id="personal-message">"paragraph here"</p>
+            </div>
+            <div class="mt-12 pt-8 border-t border-pink-100">
+                <button onclick="restart()" class="text-[#ff4d6d] font-semibold hover:underline cursor-pointer">Replay the Magic</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global heart creation function
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            // Randomly choose between a few heart-related icons
+            heart.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+            </svg>`;
+            heart.className = 'heart';
+            
+            // Positioning
+            const startX = x || Math.random() * window.innerWidth;
+            const startY = y || window.innerHeight + 20;
+            
+            heart.style.left = startX + 'px';
+            heart.style.top = startY + 'px';
+            
+            // Random styling for variety
+            const size = Math.random() * 25 + 10;
+            heart.style.width = size + 'px';
+            heart.style.opacity = Math.random() * 0.5 + 0.5;
+            heart.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            // Random colors
+            const colors = ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#c9184a'];
+            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(heart);
+            
+            // Remove from DOM after animation finishes
+            setTimeout(() => {
+                heart.remove();
+            }, 4000);
+        }
+
+        // Action: Opening the envelope
+        function openEnvelope() {
+            const env = document.getElementById('envelope');
+            const btn = document.getElementById('transition-btn');
+            
+            if (env.classList.contains('envelope-open')) return;
+
+            env.classList.add('envelope-open');
+            
+            // Burst of hearts from the center of the envelope
+            const rect = env.getBoundingClientRect();
+            for(let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createHeart(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                }, i * 50);
+            }
+
+            // Reveal the "Read My Message" button with a bounce
+            setTimeout(() => {
+                btn.classList.remove('hidden');
+                btn.classList.add('animate-bounce');
+            }, 1000);
+        }
+
+        // Action: Raining hearts gimmick
+        function rainHearts() {
+            for(let i = 0; i < 40; i++) {
+                setTimeout(() => createHeart(), i * 100);
+            }
+        }
+
+        // Navigation: Transition to message section
+        function goToMessage() {
+            const gimmicks = document.getElementById('section-gimmicks');
+            const message = document.getElementById('section-message');
+            
+            gimmicks.classList.add('hidden-section');
+            
+            setTimeout(() => {
+                message.classList.add('visible-section');
+                // Ambient heart background
+                setInterval(() => {
+                    if(message.classList.contains('visible-section')) {
+                        createHeart();
+                    }
+                }, 1500);
+            }, 800);
+        }
+
+        // Action: Restart the experience
+        function restart() {
+            // Using a transition back before reloading for smoothness
+            document.getElementById('section-message').classList.remove('visible-section');
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        }
+
+        // Passive floating hearts for the landing screen
+        setInterval(() => {
+            const messageSection = document.getElementById('section-message');
+            if(!messageSection.classList.contains('visible-section')) {
+                createHeart();
+            }
+        }, 3000);
+
+        // Interactive: Click/Tap anywhere to spawn a heart
+        document.addEventListener('mousedown', (e) => {
+            // Don't spawn if clicking a button to avoid visual clutter
+            if(e.target.tagName !== 'BUTTON' && !e.target.closest('.envelope-wrapper')) {
+                for(let i = 0; i < 3; i++) {
+                    createHeart(e.clientX + (Math.random() * 20 - 10), e.clientY + (Math.random() * 20 - 10));
+                }
+            }
+        });
+
+        // Touch support
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            if(e.target.tagName !== 'BUTTON' && !e.target.closest('.envelope-wrapper')) {
+                createHeart(touch.clientX, touch.clientY);
+            }
+        });
+    </script>
+</body>
+</html>
