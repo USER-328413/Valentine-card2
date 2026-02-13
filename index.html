@@ -115,6 +115,12 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
+
+        /* Quirky No Button */
+        #no-btn {
+            position: relative;
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
@@ -147,7 +153,6 @@
         
         <!-- Interactive "Gimmick" Buttons -->
         <div class="mt-12 flex flex-wrap justify-center gap-4">
-            <button onclick="rainHearts()" class="floating-button px-8 py-3 bg-[#ff4d6d] text-white rounded-full font-semibold shadow-lg hover:bg-[#ff758f]">Rain Hearts</button>
             <button id="transition-btn" onclick="goToMessage()" class="hidden floating-button px-8 py-3 bg-white border-2 border-[#ff4d6d] text-[#ff4d6d] rounded-full font-semibold shadow-lg">Read My Message</button>
         </div>
     </div>
@@ -160,10 +165,22 @@
                     <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                 </svg>
             </div>
-            <h2 class="cursive text-5xl md:text-6xl text-[#ff4d6d] mb-8">My Dearest...</h2>
-            <div class="text-lg md:text-2xl text-gray-700 leading-relaxed italic space-y-6">
-                <p id="personal-message">"paragraph here"</p>
+            <h2 class="cursive text-5xl md:text-6xl text-[#ff4d6d] mb-4">Hey cutie</h2>
+            <h3 class="cursive text-3xl md:text-4xl text-[#ff758f] mb-8">Will you be my valentine?</h3>
+            
+            <div class="flex flex-wrap justify-center gap-8 mt-8">
+                <button onclick="celebrate()" class="px-12 py-4 bg-[#ff4d6d] text-white text-2xl font-bold rounded-full shadow-lg hover:scale-110 transition-transform">
+                    YES!
+                </button>
+                <button id="no-btn" onmouseover="moveNoButton()" class="px-12 py-4 bg-gray-400 text-white text-2xl font-bold rounded-full shadow-lg">
+                    No
+                </button>
             </div>
+
+            <div id="success-message" class="hidden mt-12 text-[#ff4d6d] text-3xl cursive animate-bounce">
+                Yay! Best Valentine's Day Ever! ❤️
+            </div>
+
             <div class="mt-12 pt-8 border-t border-pink-100">
                 <button onclick="restart()" class="text-[#ff4d6d] font-semibold hover:underline cursor-pointer">Replay the Magic</button>
             </div>
@@ -174,32 +191,27 @@
         // Global heart creation function
         function createHeart(x, y) {
             const heart = document.createElement('div');
-            // Randomly choose between a few heart-related icons
             heart.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
             </svg>`;
             heart.className = 'heart';
             
-            // Positioning
             const startX = x || Math.random() * window.innerWidth;
             const startY = y || window.innerHeight + 20;
             
             heart.style.left = startX + 'px';
             heart.style.top = startY + 'px';
             
-            // Random styling for variety
             const size = Math.random() * 25 + 10;
             heart.style.width = size + 'px';
             heart.style.opacity = Math.random() * 0.5 + 0.5;
             heart.style.transform = `rotate(${Math.random() * 360}deg)`;
             
-            // Random colors
             const colors = ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#c9184a'];
             heart.style.color = colors[Math.floor(Math.random() * colors.length)];
             
             document.body.appendChild(heart);
             
-            // Remove from DOM after animation finishes
             setTimeout(() => {
                 heart.remove();
             }, 4000);
@@ -214,7 +226,6 @@
 
             env.classList.add('envelope-open');
             
-            // Burst of hearts from the center of the envelope
             const rect = env.getBoundingClientRect();
             for(let i = 0; i < 20; i++) {
                 setTimeout(() => {
@@ -222,18 +233,10 @@
                 }, i * 50);
             }
 
-            // Reveal the "Read My Message" button with a bounce
             setTimeout(() => {
                 btn.classList.remove('hidden');
                 btn.classList.add('animate-bounce');
             }, 1000);
-        }
-
-        // Action: Raining hearts gimmick
-        function rainHearts() {
-            for(let i = 0; i < 40; i++) {
-                setTimeout(() => createHeart(), i * 100);
-            }
         }
 
         // Navigation: Transition to message section
@@ -245,35 +248,44 @@
             
             setTimeout(() => {
                 message.classList.add('visible-section');
-                // Ambient heart background
-                setInterval(() => {
-                    if(message.classList.contains('visible-section')) {
-                        createHeart();
-                    }
-                }, 1500);
             }, 800);
+        }
+
+        // Quirky No Button Logic
+        function moveNoButton() {
+            const btn = document.getElementById('no-btn');
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+            
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+        }
+
+        // Action: Success Celebration
+        function celebrate() {
+            const success = document.getElementById('success-message');
+            success.classList.remove('hidden');
+            for(let i = 0; i < 50; i++) {
+                setTimeout(() => createHeart(), i * 50);
+            }
         }
 
         // Action: Restart the experience
         function restart() {
-            // Using a transition back before reloading for smoothness
             document.getElementById('section-message').classList.remove('visible-section');
             setTimeout(() => {
                 location.reload();
             }, 500);
         }
 
-        // Passive floating hearts for the landing screen
+        // Constant heart rain throughout the experience
         setInterval(() => {
-            const messageSection = document.getElementById('section-message');
-            if(!messageSection.classList.contains('visible-section')) {
-                createHeart();
-            }
-        }, 3000);
+            createHeart();
+        }, 300);
 
         // Interactive: Click/Tap anywhere to spawn a heart
         document.addEventListener('mousedown', (e) => {
-            // Don't spawn if clicking a button to avoid visual clutter
             if(e.target.tagName !== 'BUTTON' && !e.target.closest('.envelope-wrapper')) {
                 for(let i = 0; i < 3; i++) {
                     createHeart(e.clientX + (Math.random() * 20 - 10), e.clientY + (Math.random() * 20 - 10));
@@ -281,7 +293,6 @@
             }
         });
 
-        // Touch support
         document.addEventListener('touchstart', (e) => {
             const touch = e.touches[0];
             if(e.target.tagName !== 'BUTTON' && !e.target.closest('.envelope-wrapper')) {
